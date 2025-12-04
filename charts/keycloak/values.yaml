@@ -1,0 +1,41 @@
+replicaCount: 1
+
+image:
+  repository: quay.io/keycloak/keycloak
+  pullPolicy: IfNotPresent
+  tag: "26.0.0"
+
+service:
+  type: ClusterIP
+  port: 8080
+
+resources:
+  limits:
+    cpu: 1000m
+    memory: 1024Mi
+  requests:
+    cpu: 500m
+    memory: 512Mi
+
+# Database Configuration (Internal Postgres)
+postgres:
+  image: "postgres:16"
+  dbName: "keycloak"
+  user: "keycloak"
+  password: "password"
+  serviceName: "postgres-db"
+
+env:
+  KEYCLOAK_ADMIN: "admin"
+  KEYCLOAK_ADMIN_PASSWORD: "admin"
+  # Start command needs to know about DB now
+  KC_COMMAND: "start-dev"
+  
+  # Connect to the internal Postgres Service
+  KC_DB: "postgres"
+  KC_DB_URL: "jdbc:postgresql://postgres-db:5432/keycloak"
+  KC_DB_USERNAME: "keycloak"
+  KC_DB_PASSWORD: "password"
+  KC_PROXY: "edge"
+  KC_HOSTNAME_STRICT: "false"
+  KC_HTTP_ENABLED: "true"

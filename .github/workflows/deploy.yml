@@ -1,0 +1,40 @@
+name: Deploy Keycloak
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'charts/keycloak/**'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Helm
+        uses: azure/setup-helm@v3
+        with:
+          version: 'v3.11.1'
+
+      - name: Lint Helm Chart
+        run: helm lint charts/keycloak/
+
+      - name: Set up Kubectl
+        uses: azure/setup-kubectl@v3
+        
+      - name: Write Kubeconfig
+        run: |
+          mkdir -p ~/.kube
+          echo "${{ secrets.KUBE_CONFIG }}" > ~/.kube/config
+          chmod 600 ~/.kube/config
+
+      - name: Deploy Keycloak
+        run: |
+          helm upgrade --install keycloak ./charts/keycloak \
+            --namespace auth \
+            --create-namespace \
+            --wait \
+            --timeout 10m0s
