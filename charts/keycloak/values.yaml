@@ -31,7 +31,6 @@ env:
   KC_COMMAND: "start-dev"
   
   KC_DB: "postgres"
-  # آی‌پی سرور خودت را اینجا بگذار (نه localhost)
   KC_DB_URL: "jdbc:postgresql://130.185.120.217:5432/keycloak"
   
   KC_DB_USERNAME: "keycloak"
